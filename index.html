@@ -1,0 +1,246 @@
+<html>
+<head>
+<script src="jquery-3.7.1.min.js"></script>
+<script src="jquery.csv.js"></script>
+	<script>
+		const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+	if(urlParams.has('id')){
+	id = urlParams.get('id')}
+	else {
+	id = 1;
+	}
+	console.log(id)
+	
+	$(document).ready(function() {
+    $.ajax({
+        type: "GET",
+        url: "CharaSerifParam.txt",
+        dataType: "text",
+        success: function(data) {processData(data);}
+     });
+});
+var lines = [];
+var event;
+function processData(allText) {
+document.getElementById("eventsel").innerHTML = "";
+    var allTextLines = allText.split(/\r\n|\n/);
+    var headers = allTextLines[0].split(',');
+
+    for (var i=0; i<allTextLines.length; i++) {
+        var data = allTextLines[i].split(',');
+        if (data.length == headers.length) {
+
+            var tarr = [];
+            for (var j=0; j<headers.length; j++) {
+				if(data[j] != '')
+                tarr.push(data[j]);
+            }
+			tarr.shift();
+            lines.push(tarr);
+			preview = tarr[0].replace(/ *\[[^\]]*]/g, '');
+			preview = preview.substring(0,20)
+			document.getElementById("eventsel").innerHTML += '<option value="' + (i+1) + '">' + (i+1) + ". " + preview + "</option>";
+        }
+    }
+    console.log(lines);
+	//console.log(lines[id-1][0]);
+	event = lines[id-1][0].split('[page]');
+	for(i=0;i<event.length;i++) {
+	if(Array.from(event[i])[0] == "<") event[i] = event[i].replace('<br>', '');
+	event[i] = event[i].replace('[player_name]', 'PLAYER')
+	}
+	renderSlide(0);
+}
+
+num = 0;
+function changeEvent(){
+num = 0;
+id = document.getElementById("eventsel").value;
+history.pushState("", "", window.location.pathname + "?id=" + id);
+event = lines[id-1][0].split('[page]');
+	for(i=0;i<event.length;i++) {
+	if(Array.from(event[i])[0] == "<") event[i] = event[i].replace('<br>', '');
+	event[i] = event[i].replace('[player_name]', 'PLAYER')
+	}
+	renderSlide(0);
+}
+function renderSlide(number) {
+if(number+1 > event.length || number < 0) {return;}
+else{
+num = number;
+console.log("Slide no : " + number);
+data = event[number];
+name = data.match(/"[^"]*"/g)[0];
+texture = data.match(/"[^"]*"/g)[1].replaceAll("\"", "").split("&");
+sound = data.match(/"[^"]*"/g)[3];
+text = data.replace(/ *\[[^\]]*]/g, '');
+name = name.replaceAll('"', '')
+if(Array.from(text)[0] == "<") text = text.replace('<br>', '');
+if(Array.from(text)[0] == "<") text = text.replace('<br>', '');
+document.getElementById("nametext").innerHTML = name;
+if(name == "") {document.getElementById("name").style.visibility = "hidden";}
+else {document.getElementById("name").style.visibility = "visible";}
+document.getElementById("dial").innerHTML = text;
+if(texture.length == 1) {
+document.getElementById("charam").src = "./img/" + texture[0].split(":")[1];
+document.getElementById("chara1").style.visibility = 'hidden';
+document.getElementById("chara2").style.visibility = 'hidden';
+document.getElementById("charam").style.visibility = 'visible';
+}
+else {
+document.getElementById("chara1").src = "./img/" + texture[0].split(":")[1];
+document.getElementById("chara2").src = "./img/" + texture[1].split(":")[1];
+document.getElementById("chara1").style.visibility = 'visible';
+document.getElementById("chara2").style.visibility = 'visible';
+document.getElementById("charam").style.visibility = 'hidden';
+} 
+}
+}
+
+
+
+document.addEventListener('keyup', (e) => {
+  if (e.code === "ArrowRight" || e.code === "Space") renderSlide(num+1);
+  if (e.code === "ArrowLeft" || e.code === "Backspace") renderSlide(num-1);
+});
+
+	</script>
+<style>
+@font-face {
+font-family: bonga1;
+  src: url(font/bonga2.ttf);
+}
+.center {
+  margin: auto;
+}
+.main {
+width: 100%;
+height:100%;
+position:relative;
+white-space: nowrap;
+margin: auto;
+}
+.chara1{
+min-width:300px;
+min-height:270px;
+position: absolute;
+left:-10%;
+height:80%;
+z-index:1;
+}
+.chara2{
+min-width:300px;
+min-height:270px;
+position: absolute;
+right:-10%;
+height:80%;
+z-index:2;
+}
+.charam{
+min-width:300px;
+min-height:270px;
+left:20%;
+position: absolute;
+height:80%;
+z-index:2;
+visibility:hidden;
+}
+.textcontainer{
+position:absolute;
+width:100%;
+height:25%;
+bottom:0%;
+}
+.name{
+width:33%;
+height:33%;
+position:absolute;
+background-image: url("img/windowName.png");
+background-size: 100% 100%;
+text-align: center;
+z-index:4;
+}
+.text{
+width:100%;
+height:100%;
+position:absolute;
+background-image: url("img/windowText.png");
+background-size: 100% 100%;
+z-index:3;
+}
+.arrow{
+width:6%;
+height:25%;
+position:absolute;
+right:0%;
+bottom:10%;
+background-image: url("img/windowNext.png");
+background-size: 100% 100%;
+z-index:4;
+}
+.nametext{
+font-family: bonga1;
+color:white;
+font-size:2vw;
+  margin: 0;
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.dial{
+font-family: bonga1;
+color:black;
+font-size:1.7vw;
+  margin: 0;
+  position: absolute;
+  top: 35%;
+  left: 6%;
+  max-width:90%;
+  text-wrap:pretty;
+}
+.ar-16-9 {aspect-ratio: 16 / 9;}
+.all {width: 65%;margin: auto; height:100%;}
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+.menu{
+position:absolute;
+width:17.5%;
+padding-left:3%;
+}
+	</style>
+</head>
+<body class="ar-16-9" style="margin:0;">
+<video autoplay muted loop id="myVideo">
+  <source src="./movie/sys_bg_up.webm" type="video/mp4">
+</video>
+<div id="menu" class="menu">
+<p>Select event</p>
+<select id="eventsel" onchange="changeEvent()">
+<option value="1">10000000000000</option>
+<option value="2">10000000000000</option>
+</select>
+</div>
+<div id="all" class="ar-16-9 all">
+	<div id="main" class="center main">
+		<img id="chara1" src="test.png" class="chara1"><img id="chara2" src="test.png" class="chara2"><img id="charam" src="test.png" class="charam">
+		<div id="textcontainer" class="textcontainer">
+			<div id="name" class="name">
+				<p id="nametext" class="nametext"></p>
+			</div>
+			<div id="text" class="text">
+				<p id="dial" class="dial"></p>
+			</div>
+			<div id="arrow" class="arrow" onclick="renderSlide(num+1)"></div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
