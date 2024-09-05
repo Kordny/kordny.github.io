@@ -47,6 +47,16 @@ document.getElementById("eventsel").innerHTML = "";
 			document.getElementById("eventsel").innerHTML += '<option value="' + (i+1) + '">' + (i+1) + ". " + preview + "</option>";
         }
     }
+	/*allsounds = [];
+	for (var i=0; i < lines.length; i++) {
+			event = lines[i][0].split('[page]');
+			for(j=0;j<event.length;j++) {
+			if(Array.from(event[j])[0] == "<") event[j] = event[j].replace('<br>', '');
+			allsounds.push(event[j].match(/"[^"]*"/g)[3])
+			}
+			
+	}
+	console.log(allsounds);*/
 	//console.log(lines[id-1][0]);
 	event = lines[id-1][0].split('[page]');
 	for(i=0;i<event.length;i++) {
@@ -56,6 +66,7 @@ document.getElementById("eventsel").innerHTML = "";
 	renderSlide(0);
 }
 
+soundint = 0;
 num = 0;
 function changeEvent(){
 num = 0;
@@ -71,12 +82,16 @@ event = lines[id-1][0].split('[page]');
 function renderSlide(number) {
 if(number+1 > event.length || number < 0) {return;}
 else{
+enablesounds = document.getElementById("enablesounds").checked;
 num = number;
 //console.log("Slide no : " + number);
 data = event[number];
 name = data.match(/"[^"]*"/g)[0];
 texture = data.match(/"[^"]*"/g)[1].replaceAll("\"", "").split("&");
-sound = data.match(/"[^"]*"/g)[3];
+sound = undefined;
+if(data.match(/"[^"]*"/g)[3] != undefined) {
+sound = data.match(/"[^"]*"/g)[3].replaceAll("\"", "");
+}
 text = data.replace(/ *\[[^\]]*]/g, '');
 name = name.replaceAll('"', '')
 if(Array.from(text)[0] == "<") text = text.replace('<br>', '');
@@ -98,6 +113,18 @@ document.getElementById("chara1").style.visibility = 'visible';
 document.getElementById("chara2").style.visibility = 'visible';
 document.getElementById("charam").style.visibility = 'hidden';
 } 
+
+if(sound != undefined && enablesounds) {
+if(sound.indexOf("vc") !== -1) {
+//document.getElementById("soundy").src = "./sound/" + sound + ".wav";
+//document.getElementById("asmr").innerHTML = '<source id="soundy" src="./sound/' + sound + '".wav" type="audio/wav">';
+document.getElementById("audiodiv").innerHTML = '<audio id="asmr' + soundint + '" autoplay><source id="soundy" src="./sound/' + sound + '.wav" type="audio/wav"></audio>';
+
+var play=document.getElementById("asmr" + soundint);
+  play.play();
+  soundint++;
+}
+}
 }
 }
 
@@ -106,6 +133,7 @@ document.getElementById("charam").style.visibility = 'hidden';
 document.addEventListener('keyup', (e) => {
   if (e.code === "ArrowRight" || e.code === "Space") renderSlide(num+1);
   if (e.code === "ArrowLeft" || e.code === "Backspace") renderSlide(num-1);
+  if (e.code === "KeyH" || e.code === "Escape") hide();
 });
 function changeName() {
 playah = document.getElementById("playah").value;
@@ -130,6 +158,12 @@ j=0;
 			}
 			}
         }
+}
+
+function hide() {
+menu = document.getElementById("menu");
+if(menu.style.display != "none") {menu.style.display = "none";}
+else {menu.style.display = "initial";}
 }
 
 	</script>
@@ -242,6 +276,12 @@ position:absolute;
 width:17.5%;
 padding-left:3%;
 }
+.hide {
+display : none;
+}
+.menu2:hover + .hide{
+display: initial;
+}
 	</style>
 </head>
 <body class="ar-16-9" style="margin:0;">
@@ -249,6 +289,7 @@ padding-left:3%;
   <source src="./movie/sys_bg_up.webm" type="video/mp4">
 </video>
 <div id="menu" class="menu">
+<div class="menu2">
 <p>Select event</p>
 <select id="eventsel" onchange="changeEvent()">
 <option value="1">10000000000000</option>
@@ -258,38 +299,47 @@ padding-left:3%;
 <p>Filter : <select id="filter" onchange="changeFilter()">
 <option value="all">All</option>
 
-<option value="シロ">Shiro / シロ</option>
-<option value="クロ">Kuro / クロ</option>
-<option value="藤崎詩織">Shiori Fujisaki / 藤崎詩織</option>
-<option value="グレイ">Gray / グレイ</option>
-<option value="シロン">Shiron / シロン</option>
-<option value="プラチナ">Platina / プラチナ</option>
-<option value="ダァク">Dark / ダァク</option>
+<option value="繧ｷ繝ｭ">Shiro / 繧ｷ繝ｭ</option>
+<option value="繧ｯ繝ｭ">Kuro / 繧ｯ繝ｭ</option>
+<option value="阯､蟠手ｩｩ郢・>Shiori Fujisaki / 阯､蟠手ｩｩ郢・/option>
+<option value="繧ｰ繝ｬ繧､">Gray / 繧ｰ繝ｬ繧､</option>
+<option value="繧ｷ繝ｭ繝ｳ">Shiron / 繧ｷ繝ｭ繝ｳ</option>
+<option value="繝励Λ繝√リ">Platina / 繝励Λ繝√リ</option>
+<option value="繝繧｡繧ｯ">Dark / 繝繧｡繧ｯ</option>
 
-<option value="オレン">Oren / オレン</option>
-<option value="ウルシ">Urushi / ウルシ</option>
-<option value="セピア">Sepia / セピア</option>
-<option value="アサギ">Asagi / アサギ</option>
-<option value="テッカ">Tekka / テッカ</option>
-<option value="チグサ">Chigusa / チグサ</option>
-<option value="チアモ">Chiamo / 最愛チアモ</option>
+<option value="繧ｪ繝ｬ繝ｳ">Oren / 繧ｪ繝ｬ繝ｳ</option>
+<option value="繧ｦ繝ｫ繧ｷ">Urushi / 繧ｦ繝ｫ繧ｷ</option>
+<option value="繧ｻ繝斐い">Sepia / 繧ｻ繝斐い</option>
+<option value="繧｢繧ｵ繧ｮ">Asagi / 繧｢繧ｵ繧ｮ</option>
+<option value="繝・ャ繧ｫ">Tekka / 繝・ャ繧ｫ</option>
+<option value="繝√げ繧ｵ">Chigusa / 繝√げ繧ｵ</option>
+<option value="繝√い繝｢">Chiamo / 譛諢帙メ繧｢繝｢</option>
 
-<option value="エメラ">Emera / エメラ</option>
-<option value="パプル">Papuru / パプル</option>
-<option value="ツガル">Tsugaru / ツガル</option>
-<option value="パステル">Pastel / パステル</option>
-<option value="オリーヴ">Olive / オリーヴ</option>
-<option value="シルヴァ">Silver / シルヴァ</option>
-<option value="ブラス">Brass / ブラス</option>
+<option value="繧ｨ繝｡繝ｩ">Emera / 繧ｨ繝｡繝ｩ</option>
+<option value="繝代・繝ｫ">Papuru / 繝代・繝ｫ</option>
+<option value="繝・ぎ繝ｫ">Tsugaru / 繝・ぎ繝ｫ</option>
+<option value="繝代せ繝・Ν">Pastel / 繝代せ繝・Ν</option>
+<option value="繧ｪ繝ｪ繝ｼ繝ｴ">Olive / 繧ｪ繝ｪ繝ｼ繝ｴ</option>
+<option value="繧ｷ繝ｫ繝ｴ繧｡">Silver / 繧ｷ繝ｫ繝ｴ繧｡</option>
+<option value="繝悶Λ繧ｹ">Brass / 繝悶Λ繧ｹ</option>
 
-<option value="モモコ">Momoko / モモコ</option>
-<option value="アクア">Aqua / アクア</option>
-<option value="グリムアロエ">Grim Aloe / グリムアロエ</option>
-<option value="パイン">Pine / パイン</option>
-<option value="プルーン">Prune / プルーン</option>
-<option value="メロン">Melon / メロン</option>
-<option value="ブルーベリー">Blueberry / ブルーベリー</option>
+<option value="繝｢繝｢繧ｳ">Momoko / 繝｢繝｢繧ｳ</option>
+<option value="繧｢繧ｯ繧｢">Aqua / 繧｢繧ｯ繧｢</option>
+<option value="繧ｰ繝ｪ繝繧｢繝ｭ繧ｨ">Grim Aloe / 繧ｰ繝ｪ繝繧｢繝ｭ繧ｨ</option>
+<option value="繝代う繝ｳ">Pine / 繝代う繝ｳ</option>
+<option value="繝励Ν繝ｼ繝ｳ">Prune / 繝励Ν繝ｼ繝ｳ</option>
+<option value="繝｡繝ｭ繝ｳ">Melon / 繝｡繝ｭ繝ｳ</option>
+<option value="繝悶Ν繝ｼ繝吶Μ繝ｼ">Blueberry / 繝悶Ν繝ｼ繝吶Μ繝ｼ</option>
 </select></p>
+<p><input type="checkbox" id="enablesounds" name="enablesounds" checked/>
+    <label for="enablesounds">Sounds</label></p>
+<p><input type="button" onclick="hide()" value="Hide menu"></p>
+</div>
+<div class="hide">
+<p><b>Keyboard controlls :</b></p>
+<p><b>←→</b> Slides</p>
+<p><b>ESC</b> Hide menu</p>
+</div>
 </div>
 <div id="all" class="ar-16-9 all">
 	<div id="main" class="center main">
@@ -304,6 +354,11 @@ padding-left:3%;
 			<div id="arrow" class="arrow" onclick="renderSlide(num+1)"></div>
 		</div>
 	</div>
+</div>
+<div id="audiodiv" style="">
+<audio id="asmr" autoplay>
+  <source id="soundy" src="./sound/vc_g01_event_002.wav" type="audio/wav">
+</audio>
 </div>
 </body>
 </html>
