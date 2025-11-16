@@ -86,8 +86,13 @@ enablesounds = document.getElementById("enablesounds").checked;
 num = number;
 //console.log("Slide no : " + number);
 data = event[number];
+//fix for shitty event 69 where konami used double quotes everywhere
+if (data.includes('image=""texture')) {
+data = data.replaceAll(/""/g, '"')
+}
 name = data.match(/"[^"]*"/g)[0];
 texture = data.match(/"[^"]*"/g)[1].replaceAll("\"", "").split("&");
+
 sound = undefined;
 if(data.match(/"[^"]*"/g)[3] != undefined) {
 sound = data.match(/"[^"]*"/g)[3].replaceAll("\"", "");
